@@ -4,6 +4,13 @@ var ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth - 100;
 canvas.height = window.innerHeight - 100;
 
+let rabbit_img_now = new Image();
+let rabbit_img_list = [];
+rabbit_img_list.push('rabbit_img1.png');
+rabbit_img_list.push('rabbit_img2.png');
+
+rabbit_img_now.src = rabbit_img_list[0];
+
 var rabbit = {
     x : 10,
     y : 200,
@@ -12,6 +19,7 @@ var rabbit = {
     draw(){
         ctx.fillStyle = 'green';
         ctx.fillRect(this.x, this.y, this.width, this.height);
+        ctx.drawImage(rabbit_img_now, this.x-20, this.y-30);
     }
 }
 
@@ -19,8 +27,8 @@ rabbit.draw()
 // 클래스로 장애물 객체 생성
 class Cactus {
     constructor(){
-        this.x = 500;
-        this.y = 200;
+        this.x = 1000;
+        this.y = Math.floor(Math.random()*75)+125;
         this.width = 50;
         this.height = 50;
     }
@@ -39,6 +47,12 @@ let animation;
 function frame_code_operate(){
     animation = requestAnimationFrame(frame_code_operate);
     timer++;
+
+    if (timer % 11 === 0)
+    {
+        rabbit_img_now.src = rabbit_img_list[timer%rabbit_img_list.length]
+    }
+
     ctx.clearRect(0,0, canvas.width, canvas.height);
 
     if (timer % 180 === 0)
@@ -60,13 +74,13 @@ function frame_code_operate(){
     
     if (jumping == true)
     {
-        rabbit.y -= 5;
+        rabbit.y -= 7;
         jump_timer ++;
     }
     else{
         if (rabbit.y < 200)
         {
-            rabbit.y += 5;
+            rabbit.y += 7;
         }
     }
     if (jump_timer > 25)
@@ -79,9 +93,9 @@ function frame_code_operate(){
 
 function collision_check(rabbit, cactus)
 {
-    var diff_x = cactus.x - (rabbit.x + rabbit.width);
-    var diff_y = cactus.y - (rabbit.y + rabbit.height);
-    if (diff_x < 0 && diff_y < 0)
+    var diff_x = cactus.x - rabbit.x;
+    var diff_y = cactus.y - rabbit.y;
+    if (Math.abs(diff_x) < rabbit.width && Math.abs(diff_y) < rabbit.height)
     {
         ctx.clearRect(0,0, canvas.width, canvas.height);
         cancelAnimationFrame(animation);
